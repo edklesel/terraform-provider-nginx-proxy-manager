@@ -1,0 +1,1 @@
+terraform import nginxproxymanager_redirection_host 1

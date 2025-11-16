@@ -1,0 +1,1 @@
+terraform import nginxproxymanager_proxy_host 1

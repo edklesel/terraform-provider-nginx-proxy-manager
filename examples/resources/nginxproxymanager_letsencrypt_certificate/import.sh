@@ -1,0 +1,1 @@
+terraform import nginxproxymanager_letsencrypt_certificate 1

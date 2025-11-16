@@ -1,0 +1,1 @@
+terraform import nginxproxymanager_custom_certificate 123

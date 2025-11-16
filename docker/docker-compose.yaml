@@ -3,7 +3,7 @@
 
 services:
   npm:
-    image: jc21/nginx-proxy-manager:2.12.6
+    image: jc21/nginx-proxy-manager:${npm-version}
     ports:
     - 81:81
     volumes:

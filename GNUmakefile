@@ -19,16 +19,16 @@ test: docker-up
 	TF_ACC=1 go test -v -count=1 -timeout 120m ./...
 
 test-acc: docker-up
-	TF_ACC=1 go test -v -cover -timeout 120m ./internal/provider/tests
+	TF_ACC=1 go test -v -cover -timeout 120m -count=1 ./internal/provider/tests
 
 test-sdk: docker-up
-	go test -v -cover -timeout 120m ./internal/sdk
+	go test -v -cover -timeout 120m -count=1 ./internal/sdk
 
 .PHONY: fmt lint test testacc build install generate
 
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d
-	while true; do if docker compose -f docker/docker-compose.yaml ps | grep -q 'starting'; then echo "Waiting for services to start up..."; sleep 2; else break; fi; done
+	while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 2; else break; fi; done
 	docker compose -f docker/docker-compose.yaml ps
 
 docker-down:

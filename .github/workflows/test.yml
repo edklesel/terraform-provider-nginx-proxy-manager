@@ -81,12 +81,10 @@ jobs:
         with:
           go-version: 1.25.3
 
-      - name: Start npm
-        shell: bash
-        run: make docker-up
-
       - name: Run tests
-        run: make test-sdk
+        run: |-
+          export NPM_VERSION=${{ matrix.NPM_VERSION }}
+          make test-sdk
 
   # Run acceptance tests in a matrix with Terraform CLI versions
   test-acc:

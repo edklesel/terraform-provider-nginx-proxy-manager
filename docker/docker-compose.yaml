@@ -16,6 +16,10 @@ services:
       REQUESTS_CA_BUNDLE: "/step-ca/certs/root_ca.crt"
     networks:
       testing:
+    healthcheck:
+      test: ["CMD", "/usr/bin/check-health"]
+      interval: 10s
+      timeout: 3s
 
   pdns:
     image: pschiffe/pdns-mysql:4.8

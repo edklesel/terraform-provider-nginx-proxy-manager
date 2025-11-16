@@ -64,7 +64,7 @@ jobs:
       IMAGE: jc21/nginx-proxy-manager:${{ matrix.npm-version }}
     strategy:
       matrix:
-        npm-version:
+        NPM_VERSION:
         - '2.12.5'
         - '2.12.6'
         - '2.13.0'

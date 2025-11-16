@@ -58,6 +58,7 @@ jobs:
 
   test-sdk:
     name: Nginx Proxy Manager SDK tests
+    needs: build
     runs-on: ubuntu-latest
     env:
       IMAGE: jc21/nginx-proxy-manager:${{ matrix.npm-version }}
@@ -111,8 +112,4 @@ jobs:
       - env:
           TF_ACC: "1"
         run: make test-acc
-        timeout-minutes: 3
-      - name: Show container logs on failure
-        if: failure()
-        run: |
-          docker compose -f docker/docker-compose.yaml logs --timestamps --no-color
+        timeout-minutes: 15

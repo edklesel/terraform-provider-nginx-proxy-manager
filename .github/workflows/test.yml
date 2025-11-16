@@ -10,6 +10,10 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+    branches:
+      - main
+  schedule:
+    - cron: "0 12 * * 1" # 12:00 every Monday.
 
 # Testing only needs permissions to read the repository contents.
 permissions:
@@ -75,9 +79,9 @@ jobs:
         shell: bash
         run: make docker-up
       
-      - name: Wait for npm to start up
+      - name: Debug
         shell: bash
-        run:  while true; do curl -s -I http://localhost:81/api/nginx/access-lists | grep -q "403 Forbidden" && break; echo "Sleeping"; sleep 1; done
+        run: docker compose -f docker/docker-compose.yaml ps
       
       - name: Run tests
         run: make test-sdk

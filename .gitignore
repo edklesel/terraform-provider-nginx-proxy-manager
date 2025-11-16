@@ -38,4 +38,6 @@ website/vendor
 docker/*
 !docker/docker-compose.yaml
 !docker/pdns.sql
+!docker/dnsrouter-config.json
+!docker/step-ca
 examples/provider-install-verification

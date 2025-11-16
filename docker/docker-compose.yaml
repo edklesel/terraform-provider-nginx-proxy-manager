@@ -66,19 +66,29 @@ services:
     container_name: step-ca
     volumes:
     - step-ca:/home/step
+    - ${PWD}/docker/step-ca/resolv.conf:/etc/resolv.conf:ro
+    - ${PWD}/docker/step-ca/hosts:/etc/hosts:ro
     ports:
     - 9000:9000
     environment:
       DOCKER_STEPCA_INIT_NAME: ca-testing
       DOCKER_STEPCA_INIT_DNS_NAMES: ca.testing
       DOCKER_STEPCA_INIT_ACME: "true"
-    dns:
-      - 8.8.8.8
-      - 172.20.100.2
+    # dns:
+    #   - 172.20.100.3
     networks:
       testing:
         aliases:
           - ca.testing
+  
+  dnsrouter:
+    image: jc21/dnsrouter
+    container_name: dnsrouter
+    volumes:
+      - ${PWD}/docker/dnsrouter-config.json:/dnsrouter-config.json:ro
+    networks:
+      testing:
+        ipv4_address: 172.20.100.3
 
 volumes:
   pdns_mysql_vol:

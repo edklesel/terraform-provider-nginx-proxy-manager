@@ -79,10 +79,6 @@ jobs:
         shell: bash
         run: make docker-up
       
-      - name: Debug
-        shell: bash
-        run: docker compose -f docker/docker-compose.yaml ps
-      
       - name: Run tests
         run: make test-sdk
 

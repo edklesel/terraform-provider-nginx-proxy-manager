@@ -29,6 +29,7 @@ test-sdk: docker-up
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d
 	while true; do curl -s -I http://localhost:81/api/nginx/access-lists | grep -q "403 Forbidden" && break; echo "Waiting for NPM to start up..."; sleep 1; done
+	docker compose -f docker/docker-compose.yaml ps
 
 docker-down:
 	docker compose -f docker/docker-compose.yaml down

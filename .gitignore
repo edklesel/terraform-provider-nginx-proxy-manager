@@ -35,7 +35,9 @@ website/vendor
 *.winfile eol=crlf
 
 # Ignore stuff used for testing
-docker
+docker/*
 !docker/docker-compose.yaml
 !docker/pdns.sql
+!docker/dnsrouter-config.json
+!docker/step-ca
 examples/provider-install-verification

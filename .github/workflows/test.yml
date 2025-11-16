@@ -10,6 +10,10 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+    branches:
+      - main
+  schedule:
+    - cron: "0 12 * * 1" # 12:00 every Monday.
 
 # Testing only needs permissions to read the repository contents.
 permissions:
@@ -30,7 +34,7 @@ jobs:
       - run: go mod download
       - run: go build -v .
       - name: Run linters
-        uses: golangci/golangci-lint-action@2226d7cb06a077cd73e56eedd38eecad18e5d837 # v6.5.0
+        uses: golangci/golangci-lint-action@0a35821d5c230e903fcfe077583637dea1b27b47 # v9.0.0
         with:
           version: latest
 
@@ -54,6 +58,7 @@ jobs:
 
   test-sdk:
     name: Nginx Proxy Manager SDK tests
+    needs: build
     runs-on: ubuntu-latest
     env:
       IMAGE: jc21/nginx-proxy-manager:${{ matrix.npm-version }}
@@ -74,11 +79,7 @@ jobs:
       - name: Start npm
         shell: bash
         run: make docker-up
-      
-      - name: Wait for npm to start up
-        shell: bash
-        run:  while true; do curl -s -I http://localhost:81/api/nginx/access-lists | grep -q "403 Forbidden" && break; echo "Sleeping"; sleep 1; done
-      
+
       - name: Run tests
         run: make test-sdk
 
@@ -111,4 +112,4 @@ jobs:
       - env:
           TF_ACC: "1"
         run: make test-acc
-        timeout-minutes: 10
+        timeout-minutes: 15

@@ -78,7 +78,7 @@ jobs:
       - name: Start npm
         shell: bash
         run: make docker-up
-      
+
       - name: Run tests
         run: make test-sdk
 
@@ -111,4 +111,8 @@ jobs:
       - env:
           TF_ACC: "1"
         run: make test-acc
-        timeout-minutes: 10
+        timeout-minutes: 3
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker/docker-compose.yaml logs --timestamps --no-color

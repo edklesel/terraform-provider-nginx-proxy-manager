@@ -17,7 +17,7 @@ func TestAccLetsencryptCertificateDataSource(t *testing.T) {
 			{
 				Config: providerConfig + `
 	resource "nginxproxymanager_letsencrypt_certificate" "test" {
-	  domain_names = ["www.example.com"]
+	  domain_names = ["www2.example.com"]
 	  dns_challenge = true
 	  dns_provider = "powerdns"
 	  dns_provider_credentials = "dns_powerdns_api_url = http://pdns:8081\r\ndns_powerdns_api_key = npm"

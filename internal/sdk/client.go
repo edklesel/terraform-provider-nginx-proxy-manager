@@ -110,38 +110,38 @@ func NewClient(url string, auth AuthStruct) *Client {
 	}
 
 	client.Users = &crudObject[User, UserBase, UserCreate]{
-		client:  client,
-		apiPath: "users",
+		client:          client,
+		apiPath:         "users",
 		writeOnlyFields: []string{},
 	}
 	client.ProxyHosts = &crudObject[ProxyHost, ProxyHostBase, ProxyHostBase]{
-		client:  client,
-		apiPath: "nginx/proxy-hosts",
+		client:          client,
+		apiPath:         "nginx/proxy-hosts",
 		writeOnlyFields: []string{},
 	}
 	client.RedirectionHosts = &crudObject[RedirectionHost, RedirectionHostBase, RedirectionHostBase]{
-		client:  client,
-		apiPath: "nginx/redirection-hosts",
+		client:          client,
+		apiPath:         "nginx/redirection-hosts",
 		writeOnlyFields: []string{},
 	}
 	client.DeadHosts = &crudObject[DeadHost, DeadHostBase, DeadHostBase]{
-		client:  client,
-		apiPath: "nginx/dead-hosts",
+		client:          client,
+		apiPath:         "nginx/dead-hosts",
 		writeOnlyFields: []string{},
 	}
 	client.Streams = &crudObject[Stream, StreamBase, StreamBase]{
-		client:  client,
-		apiPath: "nginx/streams",
+		client:          client,
+		apiPath:         "nginx/streams",
 		writeOnlyFields: []string{},
 	}
 	client.AccessLists = &crudObject[AccessList, AccessListBase, AccessListBase]{
-		client:  client,
-		apiPath: "nginx/access-lists",
+		client:          client,
+		apiPath:         "nginx/access-lists",
 		writeOnlyFields: []string{},
 	}
 	client.Certificates = &certObject{
-		client:  client,
-		apiPath: "nginx/certificates",
+		client:          client,
+		apiPath:         "nginx/certificates",
 		writeOnlyFields: []string{"Meta.DNSProviderCredentials"},
 	}
 
@@ -237,7 +237,7 @@ func (c Client) NewRequest(endpoint string, method string, body *[]byte, auth bo
 	return response, nil
 }
 
-func (c Client) GetVersion() (ver *version.Version, err error){
+func (c Client) GetVersion() (ver *version.Version, err error) {
 
 	var response ClientAPIRoot
 	_response, err := c.NewRequest("", http.MethodGet, nil, false, nil)
@@ -251,6 +251,9 @@ func (c Client) GetVersion() (ver *version.Version, err error){
 	}
 
 	_ver, err := version.NewVersion(fmt.Sprintf("%d.%d.%d", response.Version.Major, response.Version.Minor, response.Version.Revision))
+	if err != nil {
+		return nil, err
+	}
 
 	return _ver, nil
 }

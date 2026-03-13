@@ -3,7 +3,6 @@ module github.com/edklesel/terraform-provider-nginx-proxy-manager
 go 1.25.3
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/edklesel/proto v0.0.0-20260313154108-688d457de2a3
 	github.com/go-test/deep v1.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -22,6 +21,7 @@ require (
 	github.com/agext/levenshtein v1.2.2 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect

@@ -22,17 +22,17 @@ import (
 
 func compareObjects(t *testing.T, obj1 any, obj2 any, _ignores []string) {
 
-	var final []string = []string{}
-	var ignores []*regexp.Regexp = []*regexp.Regexp{}
+	var final = []string{}
+	var ignores = []*regexp.Regexp{}
 	var match bool
 
-	for _, ignore := range(_ignores) {
+	for _, ignore := range _ignores {
 		ignores = append(ignores, regexp.MustCompile(ignore))
 	}
 
-	for _, msg := range(deep.Equal(obj1, obj2)) {
+	for _, msg := range deep.Equal(obj1, obj2) {
 		match = false
-		for _, ignore := range(ignores) {
+		for _, ignore := range ignores {
 
 			if match = ignore.Match([]byte(msg)); match {
 				break

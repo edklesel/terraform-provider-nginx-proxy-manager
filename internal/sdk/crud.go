@@ -37,8 +37,8 @@ type CRD[O Object, OB ObjectBase, OC ObjectCreate] interface {
 
 // Typical crud object.
 type crudObject[O Object, OB ObjectBase, OC ObjectCreate] struct {
-	client  *Client
-	apiPath string
+	client          *Client
+	apiPath         string
 	writeOnlyFields []string
 }
 

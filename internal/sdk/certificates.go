@@ -54,8 +54,8 @@ type CertificateUpload struct {
 
 // Certificates are not normal CRUD objects, so we create separate methods for those.
 type certObject struct {
-	client  *Client
-	apiPath string
+	client          *Client
+	apiPath         string
 	writeOnlyFields []string
 }
 

@@ -1,3 +1,6 @@
+-- Copyright (c) HashiCorp, Inc.
+-- SPDX-License-Identifier: MPL-2.0
+
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-12.0.2-MariaDB, for debian-linux-gnu (x86_64)
 --

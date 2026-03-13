@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+
+	version "github.com/hashicorp/go-version"
 )
 
 // Basic CRUD methods.
@@ -18,6 +20,8 @@ type CRUD[O Object, OB ObjectBase, OC ObjectCreate] interface {
 	Create(obj OC) (O, error)
 	Update(id int, newProperties OB) (O, error)
 	Delete(id int) error
+	ClientVersion() *version.Version
+	GetWriteOnlyFields() []string
 }
 
 // CRUD, but no Update function.
@@ -27,12 +31,15 @@ type CRD[O Object, OB ObjectBase, OC ObjectCreate] interface {
 	Get(id int) (O, error)
 	Create(obj OC) (O, error)
 	Delete(id int) error
+	ClientVersion() *version.Version
+	GetWriteOnlyFields() []string
 }
 
 // Typical crud object.
 type crudObject[O Object, OB ObjectBase, OC ObjectCreate] struct {
 	client  *Client
 	apiPath string
+	writeOnlyFields []string
 }
 
 // Common fields for all CRUD objects post creation.
@@ -252,4 +259,12 @@ func _delete[O Object](c *Client, apiPath string, id int) (err error) {
 }
 func (o crudObject[O, OB, OC]) Delete(id int) error {
 	return _delete[O](o.client, o.apiPath, id)
+}
+
+func (o crudObject[O, OB, OC]) ClientVersion() *version.Version {
+	return o.client.Version
+}
+
+func (o crudObject[O, OB, OC]) GetWriteOnlyFields() []string {
+	return o.writeOnlyFields
 }

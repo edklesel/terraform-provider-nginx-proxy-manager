@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"testing"
 
 	jwt "github.com/golang-jwt/jwt/v5"
@@ -24,10 +25,7 @@ func newTestClient(t *testing.T) (client *Client) {
 	client = NewClient("http://localhost:81", auth)
 
 	err := client.GetToken()
-	if err != nil {
-		t.Errorf("Unable to get client token: %v", err)
-	}
-
+	assert.NoError(t, err)
 	return client
 
 }
@@ -62,17 +60,6 @@ func getKeys() (keys, error) {
 	}
 
 	return keys, nil
-}
-
-type version struct {
-	Major    int `json:"major"`
-	Minor    int `json:"minor"`
-	Revision int `json:"revision"`
-}
-
-type api struct {
-	Status  string  `json:"status"`
-	Version version `json:"version"`
 }
 
 func parseJWTToken(t *testing.T, clientToken string) *jwt.Token {
@@ -129,7 +116,7 @@ func TestNewRequest(t *testing.T) {
 			t.FailNow()
 		}
 
-		var api api
+		var api ClientAPIRoot
 		err = json.Unmarshal(resp, &api)
 		if err != nil {
 			t.Errorf("unable to unmarshal response from /api: %s", err)
@@ -138,4 +125,17 @@ func TestNewRequest(t *testing.T) {
 		assert.Equal(t, "OK", api.Status)
 	})
 
+}
+
+func TestVersion(t *testing.T) {
+
+	var client = newTestClient(t)
+
+	t.Run("test version retrievable", func(t *testing.T) {
+
+		ver, err := client.GetVersion()
+
+		assert.NoError(t, err)
+		assert.Regexp(t, regexp.MustCompile(`\d+\.\d+\.\d+`), ver.String())
+	})
 }

@@ -12,6 +12,11 @@ services:
     - step-ca:/step-ca
     container_name: npm
     environment:
+      DB_MYSQL_HOST: "npm-db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
       LE_SERVER: "https://ca.testing:9000/acme/acme/directory"
       REQUESTS_CA_BUNDLE: "/step-ca/certs/root_ca.crt"
     networks:
@@ -20,6 +25,21 @@ services:
       test: ["CMD", "/usr/bin/check-health"]
       interval: 10s
       timeout: 3s
+  
+  npm-db:
+    image: mariadb:12.0.2
+    container_name: npm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "npm"
+      MYSQL_DATABASE: "npm"
+      MYSQL_USER: "npm"
+      MYSQL_PASSWORD: "npm"
+    volumes:
+      - npm_db:/var/lib/mysql
+      - ${PWD}/docker/npm.sql:/docker-entrypoint-initdb.d/npm.sql
+    networks:
+      testing:
 
   pdns:
     image: pschiffe/pdns-mysql:4.8
@@ -78,8 +98,6 @@ services:
       DOCKER_STEPCA_INIT_NAME: ca-testing
       DOCKER_STEPCA_INIT_DNS_NAMES: ca.testing
       DOCKER_STEPCA_INIT_ACME: "true"
-    # dns:
-    #   - 172.20.100.3
     networks:
       testing:
         aliases:
@@ -98,6 +116,7 @@ volumes:
   pdns_mysql_vol:
   db:
   npm_letsencrypt:
+  npm_db:
   step-ca:
 
 networks:

@@ -11,17 +11,38 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/edklesel/proto"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 )
 
-func compareObjects(t *testing.T, obj1 any, obj2 any) {
-	assert.Empty(t, deep.Equal(obj1, obj2))
+func compareObjects(t *testing.T, obj1 any, obj2 any, _ignores []string) {
+
+	var final []string = []string{}
+	var ignores []*regexp.Regexp = []*regexp.Regexp{}
+	var match bool
+
+	for _, ignore := range(_ignores) {
+		ignores = append(ignores, regexp.MustCompile(ignore))
+	}
+
+	for _, msg := range(deep.Equal(obj1, obj2)) {
+		match = false
+		for _, ignore := range(ignores) {
+
+			if match = ignore.Match([]byte(msg)); match {
+				break
+			}
+		}
+		if !match {
+			final = append(final, msg)
+		}
+	}
+	assert.Empty(t, final)
 }
 
 type withBaseProperties interface {
@@ -64,8 +85,6 @@ func getBaseProperties[O withBaseProperties, OB ObjectBase](object O) (objectBas
 
 func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB, OC]) {
 
-	spew.Config.DisablePointerAddresses = true
-
 	var obj O
 	objectName := reflect.ValueOf(obj).Type().Name()
 
@@ -73,7 +92,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 
 		// Create a prototype object
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		assert.NoError(t, err)
@@ -85,14 +104,14 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 		objectBase := getBaseProperties[O, OB](object)
 		objectCreateBase := getBaseProperties[OC, OB](objectCreate)
 
-		compareObjects(t, objectCreateBase, objectBase)
+		compareObjects(t, objectCreateBase, objectBase, c.GetWriteOnlyFields())
 
 		// Get the object from the DB and make sure the properties match
 		objectFetch, err := c.Get(objectId)
 		assert.NoError(t, err)
 		objectFetchBase := getBaseProperties[O, OB](objectFetch)
 
-		compareObjects(t, objectBase, objectFetchBase)
+		compareObjects(t, objectBase, objectFetchBase, c.GetWriteOnlyFields())
 
 		// Tidy up
 		err = c.Delete(objectId)
@@ -105,7 +124,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 	t.Run(fmt.Sprintf("List %s objects", objectName), func(t *testing.T) {
 
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		if err != nil {
@@ -115,7 +134,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 		assert.NoError(t, err)
 
 		var object2Create OC
-		proto.Prototype(&object2Create)
+		proto.PrototypeWithVersion(&object2Create, c.ClientVersion())
 
 		object2, err := c.Create(object2Create)
 		object2Id := getID(object2)
@@ -138,7 +157,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 	t.Run(fmt.Sprintf("Check %s can be retrieved", objectName), func(t *testing.T) {
 
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		objectId := getID(object)
@@ -161,7 +180,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 	t.Run(fmt.Sprintf("Check non-existent %s is not found", objectName), func(t *testing.T) {
 
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		assert.NoError(t, err)
@@ -186,7 +205,7 @@ func testCRD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRD[O, OB
 	t.Run(fmt.Sprintf("Delete %s", objectName), func(t *testing.T) {
 
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		assert.NoError(t, err)
@@ -226,7 +245,7 @@ func testCRUD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRUD[O, 
 	t.Run(fmt.Sprintf("Update %s", objectName), func(t *testing.T) {
 
 		var objectCreate OC
-		proto.Prototype(&objectCreate)
+		proto.PrototypeWithVersion(&objectCreate, c.ClientVersion())
 
 		object, err := c.Create(objectCreate)
 		assert.NoError(t, err)
@@ -235,7 +254,7 @@ func testCRUD[O Object, OB ObjectBase, OC ObjectCreate](t *testing.T, c CRUD[O, 
 		// Modify the user properties in a cloned struct
 		_object := object
 		var objectUpdate = getBaseProperties[O, OB](_object)
-		proto.Modify(&objectUpdate)
+		proto.ModifyWithVersion(&objectUpdate, c.ClientVersion())
 
 		// Update the object in the API
 		var objectPostUpdate O

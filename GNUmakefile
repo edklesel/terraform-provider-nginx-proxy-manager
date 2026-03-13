@@ -27,8 +27,8 @@ test-sdk: docker-up
 .PHONY: fmt lint test testacc build install generate
 
 docker-up:
-	docker compose -f docker/docker-compose.yaml up -d
-	while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 2; else break; fi; done
+	docker compose -f docker/docker-compose.yaml up -d --quiet-pull
+	while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 5; else break; fi; done
 	docker compose -f docker/docker-compose.yaml ps
 
 docker-down:

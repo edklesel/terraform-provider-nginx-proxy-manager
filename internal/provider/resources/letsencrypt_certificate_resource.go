@@ -12,6 +12,7 @@ import (
 	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
 	utils "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/utils"
 
+	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -45,6 +46,8 @@ var (
 		"strato", "selecte1v2", "timeweb", "transip", "tencentcloud", "vultr",
 		"websupport", "wedos", "edgedns", "zoneedit",
 	}
+
+	fieldLetsencryptEmail, _ = version.NewConstraint("< 2.13.0")
 )
 
 type letsencryptCertificateResource struct {
@@ -180,9 +183,12 @@ func (r *letsencryptCertificateResource) Create(ctx context.Context, req resourc
 		Provider:    utils.ReturnPointer("letsencrypt"),
 		Meta: &sdk.CertificateMeta{
 			DNSChallenge:     plan.DNSChallenge.ValueBoolPointer(),
-			LetsencryptAgree: utils.ReturnPointer(true),
-			LetsencryptEmail: plan.LetsencryptEmail.ValueStringPointer(),
 		},
+	}
+
+	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+		_certificate.Meta.LetsencryptAgree = utils.ReturnPointer(true)
+		_certificate.Meta.LetsencryptEmail = plan.LetsencryptEmail.ValueStringPointer()
 	}
 
 	if plan.DNSChallenge.ValueBool() {
@@ -213,7 +219,10 @@ func (r *letsencryptCertificateResource) Create(ctx context.Context, req resourc
 	plan.DNSChallenge = types.BoolValue(*certificate.Meta.DNSChallenge)
 	plan.DNSProvider = types.StringValue(*certificate.Meta.DNSProvider)
 	plan.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
-	plan.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
+
+	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+		plan.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
+	}
 
 	// These aren't yet implemented in the GET request to the certificate
 	// plan.CN = types.StringValue(*certificate.Meta.LetsencryptCertificate.CN)
@@ -268,8 +277,11 @@ func (r *letsencryptCertificateResource) Read(ctx context.Context, req resource.
 	state.DNSChallenge = types.BoolValue(*certificate.Meta.DNSChallenge)
 	state.DNSProvider = types.StringValue(*certificate.Meta.DNSProvider)
 	state.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
-	state.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
 	state.PropagationSeconds = types.Int64Value(int64(*certificate.Meta.PropagationSeconds))
+
+	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+		state.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
+	}
 
 	// These aren't yet implemented in the GET request to the certificate
 	// state.CN = types.StringValue(*certificate.Meta.LetsencryptCertificate.CN)

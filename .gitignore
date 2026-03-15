@@ -42,3 +42,4 @@ docker/*
 !docker/dnsrouter-config.json
 !docker/step-ca
 examples/provider-install-verification
+sandbox

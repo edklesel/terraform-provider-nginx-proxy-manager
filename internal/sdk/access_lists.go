@@ -3,6 +3,8 @@
 
 package go_npm_proxy_manager
 
+import "encoding/json"
+
 type AccessListClient struct {
 	Address   *string `json:"address,omitempty" proto:"10.1.2.3"`
 	Directive *string `json:"directive,omitempty" proto:"allow"`
@@ -17,13 +19,11 @@ type AccessListBase struct {
 	Name       *string             `json:"name,omitempty"`
 	SatisfyAny *bool               `json:"satisfy_any,omitempty"`
 	PassAuth   *bool               `json:"pass_auth,omitempty"`
-	Items      *[]AccessListItem   `json:"items,omitempty" deep:"-"`   // Clients and Items aren't
-	Clients    *[]AccessListClient `json:"clients,omitempty" deep:"-"` // returned by the GET method
+	Items      *[]AccessListItem   `json:"items" deep:"-"`   // Items aren't returned by the GET method
+	Clients    *[]AccessListClient `json:"clients,omitempty"`
 }
 
-type AccessListCreate struct {
-	AccessListBase
-}
+type AccessListCreate AccessListBase
 
 type AccessList struct {
 	ID          int    `json:"id"`
@@ -33,4 +33,14 @@ type AccessList struct {
 	AccessListBase
 	Meta      map[string]any `json:"meta,omitempty"`
 	Directive *string        `json:"directive,omitempty" proto:"allow"`
+}
+
+// Noticed a slight bug where it expects Items to be an empty array if none are required,
+// so we ensure this is the case when marchalling.
+func (a AccessListBase) MarshalJSON() ([]byte, error) {
+    type Alias AccessListBase
+    if a.Items == nil {
+        a.Items = returnPointer([]AccessListItem{})
+    }
+    return json.Marshal((Alias)(a))
 }

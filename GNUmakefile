@@ -33,3 +33,5 @@ docker-up:
 
 docker-down:
 	docker compose -f docker/docker-compose.yaml down
+	sudo rm docker/npm -rf
+	docker volume prune -f

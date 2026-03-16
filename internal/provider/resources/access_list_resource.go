@@ -166,16 +166,23 @@ func (r *accessListResource) Create(ctx context.Context, req resource.CreateRequ
 	// if this happens we try to re-apply the config via the Update method to set the
 	// order correctly.
 	// https://github.com/NginxProxyManager/nginx-proxy-manager/issues/5405
-	var needsUpdate bool = false
-	for i := range(*_accessList.Clients) {
+	var needsUpdate = false
+	for i := range *_accessList.Clients {
 		if *(*_accessList.Clients)[i].Address != *(*access_list.Clients)[i].Address &&
 			*(*_accessList.Clients)[i].Directive != *(*access_list.Clients)[i].Directive {
-				needsUpdate = true
-				break
-			}
+			needsUpdate = true
+			break
+		}
 	}
 	if needsUpdate {
 		access_list, err = r.client.AccessLists.Update(access_list.ID, access_list.AccessListBase)
+		if err != nil {
+			resp.Diagnostics.AddError(
+				"Error creating access list.",
+				fmt.Sprintf("Unable to create access list, unexpected error: %s", err.Error()),
+			)
+			return
+		}
 	}
 
 	plan.ID = types.StringValue(strconv.Itoa(access_list.ID))

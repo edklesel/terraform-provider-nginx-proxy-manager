@@ -32,7 +32,7 @@ func configureProvider(req resource.ConfigureRequest, resp *resource.ConfigureRe
 func checkAttribute(r *sdk.Client, c *version.Constraints) bool {
 	ver, err := r.GetVersion()
 	if err != nil {
-		panic(fmt.Errorf("Unable to get client version: %s", err))
+		panic(fmt.Errorf("unable to get client version: %s", err))
 	}
 
 	return c.Check(ver)

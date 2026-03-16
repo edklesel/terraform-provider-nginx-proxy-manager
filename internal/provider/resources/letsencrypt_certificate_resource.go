@@ -182,7 +182,7 @@ func (r *letsencryptCertificateResource) Create(ctx context.Context, req resourc
 		DomainNames: utils.ReturnPointer([]string{}),
 		Provider:    utils.ReturnPointer("letsencrypt"),
 		Meta: &sdk.CertificateMeta{
-			DNSChallenge:     plan.DNSChallenge.ValueBoolPointer(),
+			DNSChallenge: plan.DNSChallenge.ValueBoolPointer(),
 		},
 	}
 

@@ -44,7 +44,7 @@ jobs:
           go-version-file: 'go.mod'
           cache: true
       - name: Run linters
-        run: make lint
+        uses: golangci/golangci-lint-action@9.2.0
   
   fmt:
     name: go gmt

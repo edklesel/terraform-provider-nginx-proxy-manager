@@ -1,3 +1,6 @@
+// Copyright (c) HashiCorp, Inc.
+// SPDX-License-Identifier: MPL-2.0
+
 package provider
 
 import (
@@ -9,8 +12,8 @@ import (
 )
 
 var (
-	// Certificate constraints
-	FieldLetsencryptEmail, _ = version.NewConstraint("< 2.13.0")
+	// Certificate constraints.
+	FieldLetsencryptEmail, _        = version.NewConstraint("< 2.13.0")
 	ReturnDNSProviderCredentials, _ = version.NewConstraint("<2.13.0")
 )
 

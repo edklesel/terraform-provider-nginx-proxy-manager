@@ -123,12 +123,12 @@ func (r *letsencryptCertificateDataSource) Read(ctx context.Context, req datasou
 	state.DNSChallenge = types.BoolValue(*certificate.Meta.DNSChallenge)
 	state.DNSProvider = types.StringValue(*certificate.Meta.DNSProvider)
 	state.PropagationSeconds = types.Int64Value(int64(*certificate.Meta.PropagationSeconds))
-	
+
 	// The DNS provider credentials are only returned from the API in <2.13.0
 	if utils.CheckAttribute(r.client, &utils.ReturnDNSProviderCredentials) {
 		state.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
 	}
-	
+
 	// The LetsencryptEmail and LetsencryptAgree are only present i
 	if utils.CheckAttribute(r.client, &utils.FieldLetsencryptEmail) {
 		state.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)

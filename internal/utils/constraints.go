@@ -1,0 +1,24 @@
+package provider
+
+import (
+	"fmt"
+
+	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+
+	"github.com/hashicorp/go-version"
+)
+
+var (
+	// Certificate constraints
+	FieldLetsencryptEmail, _ = version.NewConstraint("< 2.13.0")
+	ReturnDNSProviderCredentials, _ = version.NewConstraint("<2.13.0")
+)
+
+func CheckAttribute(r *sdk.Client, c *version.Constraints) bool {
+	ver, err := r.GetVersion()
+	if err != nil {
+		panic(fmt.Errorf("unable to get client version: %s", err))
+	}
+
+	return c.Check(ver)
+}

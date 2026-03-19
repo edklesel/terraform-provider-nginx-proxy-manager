@@ -12,7 +12,6 @@ import (
 	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
 	utils "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/utils"
 
-	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -46,8 +45,6 @@ var (
 		"strato", "selecte1v2", "timeweb", "transip", "tencentcloud", "vultr",
 		"websupport", "wedos", "edgedns", "zoneedit",
 	}
-
-	fieldLetsencryptEmail, _ = version.NewConstraint("< 2.13.0")
 )
 
 type letsencryptCertificateResource struct {
@@ -186,7 +183,7 @@ func (r *letsencryptCertificateResource) Create(ctx context.Context, req resourc
 		},
 	}
 
-	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+	if utils.CheckAttribute(r.client, &utils.FieldLetsencryptEmail) {
 		_certificate.Meta.LetsencryptAgree = utils.ReturnPointer(true)
 		_certificate.Meta.LetsencryptEmail = plan.LetsencryptEmail.ValueStringPointer()
 	}
@@ -218,9 +215,14 @@ func (r *letsencryptCertificateResource) Create(ctx context.Context, req resourc
 	plan.NiceName = types.StringValue(*certificate.NiceName)
 	plan.DNSChallenge = types.BoolValue(*certificate.Meta.DNSChallenge)
 	plan.DNSProvider = types.StringValue(*certificate.Meta.DNSProvider)
-	plan.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
 
-	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+	// The DNS provider credentials are only returned from the API in <2.13.0
+	if utils.CheckAttribute(r.client, &utils.ReturnDNSProviderCredentials) {
+		plan.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
+	}
+
+	// The LetsencryptEmail and LetsencryptAgree are only present i
+	if utils.CheckAttribute(r.client, &utils.FieldLetsencryptEmail) {
 		plan.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
 	}
 
@@ -276,11 +278,15 @@ func (r *letsencryptCertificateResource) Read(ctx context.Context, req resource.
 	state.NiceName = types.StringValue(*certificate.NiceName)
 	state.DNSChallenge = types.BoolValue(*certificate.Meta.DNSChallenge)
 	state.DNSProvider = types.StringValue(*certificate.Meta.DNSProvider)
-	state.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
 	state.PropagationSeconds = types.Int64Value(int64(*certificate.Meta.PropagationSeconds))
 
-	if checkAttribute(r.client, &fieldLetsencryptEmail) {
+	if utils.CheckAttribute(r.client, &utils.FieldLetsencryptEmail) {
 		state.LetsencryptEmail = types.StringValue(*certificate.Meta.LetsencryptEmail)
+	}
+
+	// The DNS provider credentials are only returned from the API in <2.13.0
+	if utils.CheckAttribute(r.client, &utils.ReturnDNSProviderCredentials) {
+		state.DNSProviderCredentials = types.StringValue(*certificate.Meta.DNSProviderCredentials)
 	}
 
 	// These aren't yet implemented in the GET request to the certificate

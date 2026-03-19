@@ -6,7 +6,6 @@ package provider
 import (
 	"fmt"
 
-	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
 	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
@@ -27,13 +26,4 @@ func configureProvider(req resource.ConfigureRequest, resp *resource.ConfigureRe
 	}
 
 	return client
-}
-
-func checkAttribute(r *sdk.Client, c *version.Constraints) bool {
-	ver, err := r.GetVersion()
-	if err != nil {
-		panic(fmt.Errorf("unable to get client version: %s", err))
-	}
-
-	return c.Check(ver)
 }

@@ -22,7 +22,6 @@ permissions:
 jobs:
   # Ensure project builds before running testing matrix
   build:
-    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -34,7 +33,6 @@ jobs:
       - run: make build
   
   lint:
-    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -47,7 +45,6 @@ jobs:
         uses: golangci/golangci-lint-action@v9.2.0
   
   fmt:
-    name: fmt
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -83,7 +80,11 @@ jobs:
 
   test-sdk:
     name: Nginx Proxy Manager SDK tests
-    needs: build
+    needs: &needs
+      - build
+      - lint
+      - fmt
+      - generate
     runs-on: ubuntu-latest
     env:
       IMAGE: jc21/nginx-proxy-manager:${{ matrix.NPM_VERSION }}
@@ -118,7 +119,7 @@ jobs:
   # Run acceptance tests in a matrix with Terraform CLI versions
   test-acc:
     name: Terraform Provider Acceptance Tests
-    needs: build
+    needs: *needs
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:

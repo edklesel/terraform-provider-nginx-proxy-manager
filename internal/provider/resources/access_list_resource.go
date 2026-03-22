@@ -192,22 +192,22 @@ func (r *accessListResource) Create(ctx context.Context, req resource.CreateRequ
 	// 			"The order of the clients in the access list was not correct, so it was updated.",
 	// 		)
 	// 	}
-		// for i := range *_accessList.Clients {
-		// 	if *(*_accessList.Clients)[i].Address != *(*access_list.Clients)[i].Address &&
-		// 		*(*_accessList.Clients)[i].Directive != *(*access_list.Clients)[i].Directive {
-		// 		needsUpdate = true
-		// 		break
-		// 	}
-		// }
-		// if !needsUpdate {
-		// 	break
-		// } else if updated == maxUpdates {
-		// 	resp.Diagnostics.AddError(
-		// 		"Error creating access list.",
-		// 		fmt.Sprintf("Unable to create access list, client order was not preserved during creation. Atempts: %d", maxUpdates),
-		// 	)
-		// 	return
-		// }
+	// for i := range *_accessList.Clients {
+	// 	if *(*_accessList.Clients)[i].Address != *(*access_list.Clients)[i].Address &&
+	// 		*(*_accessList.Clients)[i].Directive != *(*access_list.Clients)[i].Directive {
+	// 		needsUpdate = true
+	// 		break
+	// 	}
+	// }
+	// if !needsUpdate {
+	// 	break
+	// } else if updated == maxUpdates {
+	// 	resp.Diagnostics.AddError(
+	// 		"Error creating access list.",
+	// 		fmt.Sprintf("Unable to create access list, client order was not preserved during creation. Atempts: %d", maxUpdates),
+	// 	)
+	// 	return
+	// }
 	// }
 
 	plan.ID = types.StringValue(strconv.Itoa(access_list.ID))

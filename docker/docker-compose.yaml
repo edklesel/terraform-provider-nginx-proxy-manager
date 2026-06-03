@@ -3,7 +3,7 @@
 
 services:
   npm:
-    image: jc21/nginx-proxy-manager:${NPM_VERSION:-2.14.0}
+    image: jc21/nginx-proxy-manager:${NPM_VERSION:-2.15.0}
     # image: nginxproxymanager/nginx-proxy-manager-dev:${NPM_VERSION:-pr-5421}
     ports:
     - 81:81

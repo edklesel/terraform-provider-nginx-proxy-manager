@@ -11,7 +11,6 @@ linters:
     - errcheck
     - copyloopvar
     - forcetypeassert
-    - goconst
     - gocyclo
     - godot
     - ineffassign

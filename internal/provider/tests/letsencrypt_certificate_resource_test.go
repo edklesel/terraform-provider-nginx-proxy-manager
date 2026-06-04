@@ -50,6 +50,10 @@ func TestAccLetsencryptCertificateResource(t *testing.T) {
 				ResourceName:      "nginxproxymanager_letsencrypt_certificate.test",
 				ImportState:       true,
 				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					"dns_provider_credentials",
+					"letsencrypt_email",
+				},
 			},
 		},
 	})

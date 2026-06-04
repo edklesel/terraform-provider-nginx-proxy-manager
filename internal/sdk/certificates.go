@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	version "github.com/hashicorp/go-version"
 )
 
 type LetsencryptCertificateDates struct {
@@ -26,9 +28,9 @@ type CertificateMeta struct {
 	DNSChallenge           *bool                   `json:"dns_challenge,omitempty"`
 	DNSProvider            *string                 `json:"dns_provider,omitempty"`
 	DNSProviderCredentials *string                 `json:"dns_provider_credentials,omitempty"`
-	LetsencryptAgree       *bool                   `json:"letsencrypt_agree,omitempty"`
+	LetsencryptAgree       *bool                   `json:"letsencrypt_agree,omitempty" proto.constraint:"< 2.13"`
 	LetsencryptCertificate *LetsencryptCertificate `json:"letsencrypt_certificate,omitempty"`
-	LetsencryptEmail       *string                 `json:"letsencrypt_email,omitempty"`
+	LetsencryptEmail       *string                 `json:"letsencrypt_email,omitempty"  proto.constraint:"< 2.13"`
 	PropagationSeconds     *int                    `json:"propagation_seconds,omitempty"`
 }
 
@@ -52,8 +54,9 @@ type CertificateUpload struct {
 
 // Certificates are not normal CRUD objects, so we create separate methods for those.
 type certObject struct {
-	client  *Client
-	apiPath string
+	client          *Client
+	apiPath         string
+	writeOnlyFields []string
 }
 
 // The List, Get and Delete functions are the same for Certificates.
@@ -146,4 +149,12 @@ func (o certObject) newCertificateRequest(newCert CertificateUpload, path string
 		true,
 		&content_type,
 	)
+}
+
+func (o certObject) ClientVersion() *version.Version {
+	return o.client.Version
+}
+
+func (o certObject) GetWriteOnlyFields() []string {
+	return o.writeOnlyFields
 }

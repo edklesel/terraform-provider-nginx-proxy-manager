@@ -11,6 +11,7 @@ import (
 	resources "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/provider/resources"
 	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
 
+	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/function"
@@ -27,6 +28,8 @@ var (
 	_ provider.Provider                       = &npmProvider{}
 	_ provider.ProviderWithFunctions          = &npmProvider{}
 	_ provider.ProviderWithEphemeralResources = &npmProvider{}
+
+	minVersion = "2.15.0"
 )
 
 // npmProvider defines the provider implementation.
@@ -129,9 +132,31 @@ func (p *npmProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		},
 	)
 
+	// Check if NPM is the minimum version
+	versionConstraint, err := version.NewConstraint(fmt.Sprintf(">= %s", minVersion))
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Failed checking the minimum version",
+			fmt.Sprintf(
+				"The following error occurred while checking the minimum version: %s",
+				err.Error(),
+			),
+		)
+	}
+	if !versionConstraint.Check(client.Version) {
+		resp.Diagnostics.AddError(
+			"Minimum version requirements not met",
+			fmt.Sprintf(
+				"The NGINX Proxy Manager Terraform Provider requires version %s or above.",
+				minVersion,
+			),
+		)
+		return
+	}
+
 	tflog.Info(ctx, "Client created, fetching token.")
 
-	err := client.GetToken()
+	err = client.GetToken()
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Failed creating Nginx Proxy Manager client",

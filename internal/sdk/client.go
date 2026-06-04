@@ -12,12 +12,14 @@ import (
 	"slices"
 
 	"github.com/hashicorp/go-retryablehttp"
+	version "github.com/hashicorp/go-version"
 )
 
 type Client struct {
 	HostURL string     `json:"hostUrl"`
 	Auth    AuthStruct `json:"auth"`
 	Token   string
+	Version *version.Version
 
 	Users            *crudObject[User, UserBase, UserCreate]
 	ProxyHosts       *crudObject[ProxyHost, ProxyHostBase, ProxyHostBase]
@@ -45,6 +47,18 @@ type HTTPResponseError struct {
 type HTTPResponseCode struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+type ClientVersion struct {
+	Major    int64 `json:"major"`
+	Minor    int64 `json:"minor"`
+	Revision int64 `json:"revision"`
+}
+
+type ClientAPIRoot struct {
+	Status  string        `json:"status"`
+	Setup   bool          `json:"setup"`
+	Version ClientVersion `json:"version"`
 }
 
 func CheckResponse(response []byte) *HTTPResponseError {
@@ -96,33 +110,46 @@ func NewClient(url string, auth AuthStruct) *Client {
 	}
 
 	client.Users = &crudObject[User, UserBase, UserCreate]{
-		client:  client,
-		apiPath: "users",
+		client:          client,
+		apiPath:         "users",
+		writeOnlyFields: []string{},
 	}
 	client.ProxyHosts = &crudObject[ProxyHost, ProxyHostBase, ProxyHostBase]{
-		client:  client,
-		apiPath: "nginx/proxy-hosts",
+		client:          client,
+		apiPath:         "nginx/proxy-hosts",
+		writeOnlyFields: []string{},
 	}
 	client.RedirectionHosts = &crudObject[RedirectionHost, RedirectionHostBase, RedirectionHostBase]{
-		client:  client,
-		apiPath: "nginx/redirection-hosts",
+		client:          client,
+		apiPath:         "nginx/redirection-hosts",
+		writeOnlyFields: []string{},
 	}
 	client.DeadHosts = &crudObject[DeadHost, DeadHostBase, DeadHostBase]{
-		client:  client,
-		apiPath: "nginx/dead-hosts",
+		client:          client,
+		apiPath:         "nginx/dead-hosts",
+		writeOnlyFields: []string{},
 	}
 	client.Streams = &crudObject[Stream, StreamBase, StreamBase]{
-		client:  client,
-		apiPath: "nginx/streams",
+		client:          client,
+		apiPath:         "nginx/streams",
+		writeOnlyFields: []string{},
 	}
 	client.AccessLists = &crudObject[AccessList, AccessListBase, AccessListBase]{
-		client:  client,
-		apiPath: "nginx/access-lists",
+		client:          client,
+		apiPath:         "nginx/access-lists",
+		writeOnlyFields: []string{},
 	}
 	client.Certificates = &certObject{
-		client:  client,
-		apiPath: "nginx/certificates",
+		client:          client,
+		apiPath:         "nginx/certificates",
+		writeOnlyFields: []string{"Meta.DNSProviderCredentials"},
 	}
+
+	_ver, err := client.GetVersion()
+	if err != nil {
+		panic(fmt.Sprintf("Unable to retrieve NPM version from API: %s", err))
+	}
+	client.Version = _ver
 
 	return client
 }
@@ -205,5 +232,28 @@ func (c Client) NewRequest(endpoint string, method string, body *[]byte, auth bo
 		}
 	}
 
+	// fmt.Println(string(response))
+
 	return response, nil
+}
+
+func (c Client) GetVersion() (ver *version.Version, err error) {
+
+	var response ClientAPIRoot
+	_response, err := c.NewRequest("", http.MethodGet, nil, false, nil)
+	if err != nil {
+		return ver, fmt.Errorf("unable to get version of running NPM: %v", err)
+	}
+
+	err = json.Unmarshal(_response, &response)
+	if err != nil {
+		return
+	}
+
+	_ver, err := version.NewVersion(fmt.Sprintf("%d.%d.%d", response.Version.Major, response.Version.Minor, response.Version.Revision))
+	if err != nil {
+		return nil, err
+	}
+
+	return _ver, nil
 }

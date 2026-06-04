@@ -22,7 +22,6 @@ permissions:
 jobs:
   # Ensure project builds before running testing matrix
   build:
-    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -31,12 +30,35 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache: true
-      - run: go mod download
-      - run: go build -v .
-      - name: Run linters
-        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
+      - run: make build
+  
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v6.3.0
         with:
-          version: latest
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Run linters
+        uses: golangci/golangci-lint-action@v9.2.0
+  
+  fmt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v6.3.0
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Run formatter
+        run: make fmt
+      - name: git diff
+        run: |
+          git diff --compact-summary --exit-code || \
+            (echo; echo "Unexpected difference in directories after code generation. Run 'make fmt' command and commit."; exit 1)
 
   generate:
     runs-on: ubuntu-latest
@@ -58,15 +80,18 @@ jobs:
 
   test-sdk:
     name: Nginx Proxy Manager SDK tests
-    needs: build
+    needs: &needs
+      - build
+      - lint
+      - fmt
+      - generate
     runs-on: ubuntu-latest
     env:
-      IMAGE: jc21/nginx-proxy-manager:${{ matrix.npm-version }}
+      IMAGE: jc21/nginx-proxy-manager:${{ matrix.NPM_VERSION }}
     strategy:
       matrix:
-        npm-version:
-        - '2.12.5'
-        - '2.12.6'
+        NPM_VERSION:
+        - 2.15.0
 
     steps:
       - uses: actions/checkout@v4
@@ -76,17 +101,15 @@ jobs:
         with:
           go-version: 1.25.3
 
-      - name: Start npm
-        shell: bash
-        run: make docker-up
-
       - name: Run tests
-        run: make test-sdk
+        run: |-
+          export NPM_VERSION=${{ matrix.NPM_VERSION }}
+          make test-sdk
 
   # Run acceptance tests in a matrix with Terraform CLI versions
   test-acc:
     name: Terraform Provider Acceptance Tests
-    needs: build
+    needs: *needs
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -98,6 +121,7 @@ jobs:
           - '1.11.*'
           - '1.12.*'
           - '1.13.*'
+          - '1.14.*'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v6.3.0

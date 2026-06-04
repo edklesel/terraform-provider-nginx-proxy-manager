@@ -1,6 +1,9 @@
 -- Copyright (c) HashiCorp, Inc.
 -- SPDX-License-Identifier: MPL-2.0
 
+-- Copyright (c) HashiCorp, Inc.
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 curl -X POST \
   'http://localhost:8081/api/v1/servers/localhost/zones' \

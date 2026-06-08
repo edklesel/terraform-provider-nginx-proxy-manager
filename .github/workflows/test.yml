@@ -92,6 +92,7 @@ jobs:
       matrix:
         NPM_VERSION:
         - 2.15.0
+        - 2.15.1
 
     steps:
       - uses: actions/checkout@v4

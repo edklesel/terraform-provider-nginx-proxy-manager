@@ -39,10 +39,9 @@ terraform {
 ## Supported Versions
 
 The provider is tested against the following versions in CI:
-- 2.12.5
-- 2.12.6
+- 2.15.0
 
-Due to API changes, the minimum required version for Nginx Proxy Manager is 2.12.5.
+Due to API changes, the minimum required version for Nginx Proxy Manager is 2.15.0.
 
 The provider is tested against Terraform versions 1.10.0 and above
 

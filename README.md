@@ -30,7 +30,7 @@ This provider is installed via the following configuration block:
 terraform {
     required_providers {
         nginxproxymanager = {
-            source = "eklesel/nginxproxymanager"
+            source = "edklesel/nginxproxymanager"
         }
     }
 }

@@ -5,7 +5,7 @@ go 1.25.8
 require (
 	github.com/edklesel/proto v0.0.0-20260313154108-688d457de2a3
 	github.com/go-test/deep v1.1.1
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/terraform-plugin-framework v1.19.0

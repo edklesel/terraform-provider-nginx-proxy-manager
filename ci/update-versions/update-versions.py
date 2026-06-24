@@ -1,4 +1,4 @@
-import os, requests
+import os, requests, re
 from collections import defaultdict
 from ruamel.yaml import YAML
 
@@ -6,6 +6,7 @@ OWNER_REPO = "NginxProxyManager/nginx-proxy-manager"
 WORKFLOW_PATH = ".github/workflows/test.yml"
 JOB_NAME = "test-sdk"
 MIN_VERSION = (2, 15, 0)  # Always included as a floor
+README_PATH = "README.md"
 
 # ── Fetch releases ────────────────────────────────────────────────
 token = os.environ["GITHUB_TOKEN"]
@@ -84,3 +85,23 @@ else:
     print("Updated VERSION matrix:")
     for v in result:
         print(f"  - {v}")
+
+# ── Update README ─────────────────────────────────────────────────
+with open(README_PATH) as f:
+    readme = f.read()
+
+new_list = "\n".join(f"- {v}" for v in result)
+new_section = f"The provider is tested against the following versions in CI:\n{new_list}"
+
+updated_readme = re.sub(
+    r"The provider is tested against the following versions in CI:\n(?:- .+\n?)+",
+    new_section + "\n",
+    readme
+)
+
+if updated_readme == readme:
+    print("README versions unchanged, skipping.")
+else:
+    with open(README_PATH, "w") as f:
+        f.write(updated_readme)
+    print("Updated README versions.")

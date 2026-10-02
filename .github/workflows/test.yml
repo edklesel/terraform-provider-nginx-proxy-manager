@@ -91,7 +91,8 @@ jobs:
     strategy:
       matrix:
         NPM_VERSION:
-        - 2.15
+        - 2.15.0
+        - 2.15.1
         - 2.16.0
 
     steps:

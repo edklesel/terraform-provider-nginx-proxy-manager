@@ -139,3 +139,7 @@ jobs:
           TF_ACC: "1"
         run: make test-acc
         timeout-minutes: 15
+        
+      - name: Capture service logs on failure
+        if: failure()
+        run: for i in $(docker ps -a --format '{{.Names}}'); do echo "==== $i ===="; docker logs $i; echo ""; done

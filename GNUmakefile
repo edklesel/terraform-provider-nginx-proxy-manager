@@ -1,3 +1,6 @@
+export NPM_UID=$(shell id -u)
+export NPM_GID=$(shell id -g)
+
 default: fmt lint install generate
 
 build:

@@ -33,6 +33,8 @@ services:
     image: mariadb:12.0.2
     container_name: npm-db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
     environment:
       MYSQL_ROOT_PASSWORD: "npm"
       MYSQL_DATABASE: "npm"
@@ -77,6 +79,8 @@ services:
   pdns-db:
     image: mariadb:12.0.2
     container_name: pdns-db
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
     environment:
       MYSQL_ROOT_PASSWORD: 'pdns'
       MYSQL_DATABASE: 'pdns'

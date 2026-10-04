@@ -95,6 +95,7 @@ services:
   step-ca:
     image: smallstep/step-ca:0.28.4
     container_name: step-ca
+    # user: "${NPM_UID}:${NPM_GID}"
     volumes:
     - step-ca:/home/step
     - ${PWD}/docker/step-ca/resolv.conf:/etc/resolv.conf:ro
@@ -102,8 +103,6 @@ services:
     ports:
     - 9000:9000
     environment:
-      PUID: "${NPM_UID}"
-      PGID: "${NPM_GID}"
       DOCKER_STEPCA_INIT_NAME: ca-testing
       DOCKER_STEPCA_INIT_DNS_NAMES: ca.testing
       DOCKER_STEPCA_INIT_ACME: "true"

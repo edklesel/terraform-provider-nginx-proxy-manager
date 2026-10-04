@@ -1,5 +1,7 @@
-export NPM_UID=$(shell id -u)
-export NPM_GID=$(shell id -g)
+# export NPM_UID=$(shell id -u)
+# export NPM_GID=$(shell id -g)
+export NPM_UID=1001
+export NPM_GID=1000
 
 default: fmt lint install generate
 

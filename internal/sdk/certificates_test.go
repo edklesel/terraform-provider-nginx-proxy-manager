@@ -94,20 +94,18 @@ func TestCertificatesLetsencrypt(t *testing.T) {
 
 	var randInt = rand.IntN(1e5)
 
-	var _certMeta CertificateMeta = CertificateMeta{
-		DNSProvider: returnPointer("powerdns"),
+	var _certMeta = CertificateMeta{
+		DNSProvider:            returnPointer("powerdns"),
 		DNSProviderCredentials: returnPointer("dns_powerdns_api_url = http://pdns:8081\r\ndns_powerdns_api_key = npm"),
-		DNSChallenge: returnPointer(true),
-		// LetsencryptAgree: returnPointer(true),
-		// LetsencryptEmail: returnPointer("test@test.com"),
+		DNSChallenge:           returnPointer(true),
 		PropagationSeconds: returnPointer(10),
 	}
 
-	var _certCreate CertificateBase = CertificateBase{
-		Provider: returnPointer("letsencrypt"),
-		NiceName: returnPointer(fmt.Sprintf("test%d", randInt)),
+	var _certCreate = CertificateBase{
+		Provider:    returnPointer("letsencrypt"),
+		NiceName:    returnPointer(fmt.Sprintf("test%d", randInt)),
 		DomainNames: returnPointer([]string{"www.example.com", "2.example.com"}),
-		Meta: &_certMeta,
+		Meta:        &_certMeta,
 	}
 
 	var cert Certificate
@@ -117,7 +115,7 @@ func TestCertificatesLetsencrypt(t *testing.T) {
 	assert.ElementsMatch(t, *cert.DomainNames, *_certCreate.DomainNames)
 	assert.NotNil(t, cert.Meta.LetsencryptCertificate.Dates.To)
 	assert.NotNil(t, cert.Meta.LetsencryptCertificate.Dates.From)
-	
+
 	// Don't check NiceName as it the returned NiceName is just the domain names
 	// assert.Equal(t, *cert.NiceName, *_certCreate.NiceName)
 

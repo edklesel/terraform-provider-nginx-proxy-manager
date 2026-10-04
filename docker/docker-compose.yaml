@@ -102,6 +102,8 @@ services:
     ports:
     - 9000:9000
     environment:
+      PUID: "${NPM_UID}"
+      PGID: "${NPM_GID}"
       DOCKER_STEPCA_INIT_NAME: ca-testing
       DOCKER_STEPCA_INIT_DNS_NAMES: ca.testing
       DOCKER_STEPCA_INIT_ACME: "true"

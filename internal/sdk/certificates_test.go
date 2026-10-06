@@ -98,7 +98,7 @@ func TestCertificatesLetsencrypt(t *testing.T) {
 		DNSProvider:            returnPointer("powerdns"),
 		DNSProviderCredentials: returnPointer("dns_powerdns_api_url = http://pdns:8081\r\ndns_powerdns_api_key = npm"),
 		DNSChallenge:           returnPointer(true),
-		PropagationSeconds: returnPointer(10),
+		PropagationSeconds:     returnPointer(10),
 	}
 
 	var _certCreate = CertificateBase{

@@ -1,7 +1,6 @@
-# export NPM_UID=$(shell id -u)
-# export NPM_GID=$(shell id -g)
-export NPM_UID=1001
-export NPM_GID=1000
+export NPM_UID=1000 # NPM runs as the same uid as step-ca so it can read the certificate
+export NPM_GID=$(shell id -g)
+export PWD=$(shell pwd)
 
 default: fmt lint install generate
 

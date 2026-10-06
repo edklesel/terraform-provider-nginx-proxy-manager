@@ -110,7 +110,7 @@ func TestCertificatesLetsencrypt(t *testing.T) {
 
 	var cert Certificate
 	cert, err = client.Certificates.Create(_certCreate)
-	if ! assert.NoError(t, err) {
+	if !assert.NoError(t, err) {
 		assert.FailNow(t, "certificate creation failed, abandoning test")
 	}
 

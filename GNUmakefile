@@ -32,7 +32,7 @@ test-sdk: docker-up
 
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d --quiet-pull
-	while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 5; else break; fi; done
+	timeout 300 while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 5; else break; fi; done || { echo "Timed out after 5 minutes waiting for services"; exit 1; }
 	docker compose -f docker/docker-compose.yaml ps
 
 docker-down:

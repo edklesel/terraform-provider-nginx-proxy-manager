@@ -95,7 +95,6 @@ services:
   step-ca:
     image: smallstep/step-ca:0.28.4
     container_name: step-ca
-    # user: "${NPM_UID}:${NPM_GID}"
     volumes:
     - step-ca:/home/step
     - ${PWD}/docker/step-ca/resolv.conf:/etc/resolv.conf:ro

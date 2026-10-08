@@ -1,4 +1,5 @@
-export NPM_UID=1000 # NPM runs as the same uid as step-ca so it can read the certificate
+# NPM runs as the same uid as step-ca so it can read the certificate
+export NPM_UID=1000
 export NPM_GID=$(shell id -g)
 export PWD=$(shell pwd)
 
@@ -32,7 +33,7 @@ test-sdk: docker-up
 
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d --quiet-pull
-	timeout 300 while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP '(unhealthy|starting)'; then echo "Waiting for services to start up..."; sleep 5; else break; fi; done || { echo "Timed out after 5 minutes waiting for services"; exit 1; }
+	timeout 300 bash -c 'while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP "(unhealthy|starting)"; then echo "Waiting for services to start up..."; sleep 5 & wait $$!; else break; fi; done' || { echo "Timed out after 5 minutes waiting for services"; exit 1; }
 	docker compose -f docker/docker-compose.yaml ps
 
 docker-down:

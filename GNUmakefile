@@ -33,6 +33,7 @@ test-sdk: docker-up
 
 docker-up:
 	docker compose -f docker/docker-compose.yaml up -d --quiet-pull
+	docker exec -it npm bash -c 'chmod g+r /data/keys.json'
 	timeout 300 bash -c 'while true; do if docker compose -f docker/docker-compose.yaml ps | grep -qP "(unhealthy|starting)"; then echo "Waiting for services to start up..."; sleep 5 & wait $$!; else break; fi; done' || { echo "Timed out after 5 minutes waiting for services"; exit 1; }
 	docker compose -f docker/docker-compose.yaml ps
 

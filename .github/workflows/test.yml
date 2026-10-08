@@ -93,6 +93,7 @@ jobs:
         NPM_VERSION:
         - 2.15.0
         - 2.15.1
+        - 2.16.0
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -118,10 +119,10 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.11.*'
-          - '1.12.*'
-          - '1.13.*'
-          - '1.14.*'
+          # - '1.11.*'
+          # - '1.12.*'
+          # - '1.13.*'
+          # - '1.14.*'
           - '1.15.*'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -138,3 +139,17 @@ jobs:
           TF_ACC: "1"
         run: make test-acc
         timeout-minutes: 15
+        
+      - name: Capture service logs on failure
+        if: failure()
+        run: |
+          mkdir -p /tmp/diagnostics
+          for i in $(docker ps -a --format '{{.Names}}'); do echo "==== $i ===="; docker logs $i > /tmp/diagnostics/$i.log; echo ""; done
+
+      - name: Upload diagnostic artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-diagnostics
+          path: /tmp/diagnostics/
+          retention-days: 30

@@ -110,7 +110,9 @@ func TestCertificatesLetsencrypt(t *testing.T) {
 
 	var cert Certificate
 	cert, err = client.Certificates.Create(_certCreate)
-	assert.NoError(t, err)
+	if !assert.NoError(t, err) {
+		assert.FailNow(t, "certificate creation failed, abandoning test")
+	}
 
 	assert.ElementsMatch(t, *cert.DomainNames, *_certCreate.DomainNames)
 	assert.NotNil(t, cert.Meta.LetsencryptCertificate.Dates.To)

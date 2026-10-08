@@ -3,7 +3,7 @@
 
 services:
   npm:
-    image: jc21/nginx-proxy-manager:${NPM_VERSION:-2.15.0}
+    image: jc21/nginx-proxy-manager:${NPM_VERSION:-2.16.0}
     # image: nginxproxymanager/nginx-proxy-manager-dev:${NPM_VERSION:-pr-5421}
     ports:
     - 81:81
@@ -13,6 +13,8 @@ services:
     - step-ca:/step-ca
     container_name: npm
     environment:
+      PUID: "${NPM_UID}"
+      PGID: "${NPM_GID}"
       DB_MYSQL_HOST: "npm-db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
@@ -31,6 +33,8 @@ services:
     image: mariadb:12.0.2
     container_name: npm-db
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
     environment:
       MYSQL_ROOT_PASSWORD: "npm"
       MYSQL_DATABASE: "npm"
@@ -75,6 +79,8 @@ services:
   pdns-db:
     image: mariadb:12.0.2
     container_name: pdns-db
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
     environment:
       MYSQL_ROOT_PASSWORD: 'pdns'
       MYSQL_DATABASE: 'pdns'

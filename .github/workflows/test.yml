@@ -135,3 +135,17 @@ jobs:
           TF_ACC: "1"
         run: make test-acc
         timeout-minutes: 15
+        
+      - name: Capture service logs on failure
+        if: failure()
+        run: |
+          mkdir -p /tmp/diagnostics
+          for i in $(docker ps -a --format '{{.Names}}'); do echo "==== $i ===="; docker logs $i > /tmp/diagnostics/$i.log; echo ""; done
+
+      - name: Upload diagnostic artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-diagnostics
+          path: /tmp/diagnostics/
+          retention-days: 30

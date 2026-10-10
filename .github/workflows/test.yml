@@ -6,14 +6,14 @@ name: Tests
 on:
   pull_request:
     paths-ignore:
-      - 'README.md'
+    - 'README.md'
   push:
     paths-ignore:
-      - 'README.md'
+    - 'README.md'
     branches:
-      - main
+    - main
   schedule:
-    - cron: "0 12 * * 1" # 12:00 every Monday.
+  - cron: "0 12 * * 1"   # 12:00 every Monday.
 
 # Testing only needs permissions to read the repository contents.
 permissions:
@@ -25,88 +25,86 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - run: make build
-  
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+    - run: make build
+
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - name: Run linters
-        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
-  
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+    - name: Run linters
+      uses: 
+        golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a       # v9.3.0
   fmt:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - name: Run formatter
-        run: make fmt
-      - name: git diff
-        run: |
-          git diff --compact-summary --exit-code || \
-            (echo; echo "Unexpected difference in directories after code generation. Run 'make fmt' command and commit."; exit 1)
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+    - name: Run formatter
+      run: make fmt
+    - name: git diff
+      run: |
+        git diff --compact-summary --exit-code || \
+          (echo; echo "Unexpected difference in directories after code generation. Run 'make fmt' command and commit."; exit 1)
 
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
-          cache: true
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
+        cache: true
       # We need the latest version of Terraform for our documentation generation to use
-      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
-        with:
-          terraform_wrapper: false
-      - run: make generate
-      - name: git diff
-        run: |
-          git diff --compact-summary --exit-code || \
-            (echo; echo "Unexpected difference in directories after code generation. Run 'make generate' command and commit."; exit 1)
+    - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e   # v4.0.1
+      with:
+        terraform_wrapper: false
+    - run: make generate
+    - name: git diff
+      run: |
+        git diff --compact-summary --exit-code || \
+          (echo; echo "Unexpected difference in directories after code generation. Run 'make generate' command and commit."; exit 1)
 
   test-sdk:
     name: Nginx Proxy Manager SDK tests
     needs: &needs
-      - build
-      - lint
-      - fmt
-      - generate
+    - build
+    - lint
+    - fmt
+    - generate
     runs-on: ubuntu-latest
     env:
       IMAGE: jc21/nginx-proxy-manager:${{ matrix.NPM_VERSION }}
     strategy:
       matrix:
         NPM_VERSION:
-        - 2.15.0
         - 2.15.1
         - 2.16.0
-
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
 
-      - name: Setup Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
+    - name: Setup Go
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
 
-      - name: Run tests
-        run: |-
-          export NPM_VERSION=${{ matrix.NPM_VERSION }}
-          make test-sdk
+    - name: Run tests
+      run: |-
+        export NPM_VERSION=${{ matrix.NPM_VERSION }}
+        make test-sdk
 
   # Run acceptance tests in a matrix with Terraform CLI versions
   test-acc:
@@ -119,34 +117,34 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.15.*'
-          - '1.16.*'
+        - '1.15.*'
+        - '1.16.*'
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
-        with:
-          terraform_version: ${{ matrix.terraform }}
-          terraform_wrapper: false
-      - run: go mod download
-      - env:
-          TF_ACC: "1"
-        run: make test-acc
-        timeout-minutes: 15
-        
-      - name: Capture service logs on failure
-        if: failure()
-        run: |
-          mkdir -p /tmp/diagnostics
-          for i in $(docker ps -a --format '{{.Names}}'); do echo "==== $i ===="; docker logs $i > /tmp/diagnostics/$i.log; echo ""; done
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e   # v7.0.0
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+    - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e   # v4.0.1
+      with:
+        terraform_version: ${{ matrix.terraform }}
+        terraform_wrapper: false
+    - run: go mod download
+    - env:
+        TF_ACC: "1"
+      run: make test-acc
+      timeout-minutes: 15
 
-      - name: Upload diagnostic artifacts
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: test-diagnostics
-          path: /tmp/diagnostics/
-          retention-days: 30
+    - name: Capture service logs on failure
+      if: failure()
+      run: |
+        mkdir -p /tmp/diagnostics
+        for i in $(docker ps -a --format '{{.Names}}'); do echo "==== $i ===="; docker logs $i > /tmp/diagnostics/$i.log; echo ""; done
+
+    - name: Upload diagnostic artifacts
+      if: failure()
+      uses: actions/upload-artifact@v6
+      with:
+        name: test-diagnostics
+        path: /tmp/diagnostics/
+        retention-days: 30

@@ -43,3 +43,6 @@ docker/*
 !docker/step-ca
 examples/provider-install-verification
 sandbox
+
+# Python stuff
+*venv

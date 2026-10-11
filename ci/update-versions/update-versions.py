@@ -11,61 +11,57 @@ JOB_NAME = "test-sdk"
 MIN_VERSION = (2, 15, 0)  # Always included as a floor
 README_PATH = "README.md"
 
-# ── Fetch releases ────────────────────────────────────────────────
+# ── Fetch releases (all pages) ────────────────────────────────────
 token = os.environ["GITHUB_TOKEN"]
-response = requests.get(
-    f"https://api.github.com/repos/{OWNER_REPO}/releases",
-    headers={
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json"
-    },
-    params={"per_page": 100}
-)
-response.raise_for_status()
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Accept": "application/vnd.github+json",
+}
 
-# ── Parse versions, skip pre-releases and drafts ──────────────────
+releases = []
+url = f"https://api.github.com/repos/{OWNER_REPO}/releases"
+params = {"per_page": 100}
+while url:
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    releases.extend(response.json())
+    url = response.links.get("next", {}).get("url")
+    params = None  # the "next" URL already carries the query string
+
+# ── Parse versions, skip pre-releases, drafts, and anything below MIN_VERSION
 versions = []
-for r in response.json():
+for r in releases:
     if r["prerelease"] or r["draft"]:
         continue
     tag = r["tag_name"].lstrip("v")
     parts = tag.split(".")
-    if len(parts) == 3:
-        versions.append(tuple(int(x) for x in parts))
+    if len(parts) == 3 and all(p.isdigit() for p in parts):
+        v = tuple(int(x) for x in parts)
+        if v >= MIN_VERSION:
+            versions.append(v)
 
-versions.sort(reverse=True)
-
-# ── Find the 5 most recent distinct minors ────────────────────────
-seen_minors = []
+# ── Group patches by (major, minor) ───────────────────────────────
 by_minor = defaultdict(list)
 for v in versions:
-    minor_key = (v[0], v[1])
-    if minor_key not in seen_minors:
-        seen_minors.append(minor_key)
-    by_minor[minor_key].append(v)
-    if len(seen_minors) == 5:
-        break
+    by_minor[(v[0], v[1])].append(v)
 
-latest_minor = seen_minors[0]
-older_minors = seen_minors[1:]
-
-# ── Build version list ────────────────────────────────────────────
 result = []
+if by_minor:
+    latest_minor = max(by_minor)
 
-# Older minors: bare "maj.min", filtered below MIN_VERSION minor
-for m in reversed(older_minors):
-    if m >= (MIN_VERSION[0], MIN_VERSION[1]):
-        result.append(f"{m[0]}.{m[1]}")
+    for minor in sorted(by_minor):
+        patches = sorted(by_minor[minor])
+        if minor == latest_minor:
+            # Latest minor: every patch
+            selected = patches
+        else:
+            # Older minors: only the newest patch
+            selected = [patches[-1]]
+        result.extend(".".join(map(str, v)) for v in selected)
 
-# Latest minor: last 5 patches, oldest first, filtered below MIN_VERSION
-latest_patches = [v for v in sorted(by_minor[latest_minor])[-5:] if v >= MIN_VERSION]
-for v in latest_patches:
-    result.append(f"{v[0]}.{v[1]}.{v[2]}")
-
-# Force MIN_VERSION into the list if not already present
-min_str = f"{MIN_VERSION[0]}.{MIN_VERSION[1]}.{MIN_VERSION[2]}"
-min_minor_str = f"{MIN_VERSION[0]}.{MIN_VERSION[1]}"
-if min_str not in result and min_minor_str not in result:
+min_str = ".".join(map(str, MIN_VERSION))
+min_minor_prefix = f"{MIN_VERSION[0]}.{MIN_VERSION[1]}."
+if not any(r.startswith(min_minor_prefix) for r in result):
     result.insert(0, min_str)
 
 # ── Load, update, and write the workflow file ─────────────────────

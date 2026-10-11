@@ -20,7 +20,7 @@ jobs:
 
       - name: Update workflow matrix
         run: |
-            python3 -m pip install ci/update-versions/requirements.yaml
+            python3 -m pip install -r ci/update-versions/requirements.yaml
             python3 ci/update-versions/update-versions.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,6 +32,4 @@ jobs:
           title: "chore: update SDK version matrix"
           branch: bump/sdk-versions
           body: |
-            Automated update of SDK version matrix:
-            - Last 5 minor versions (as `maj.min`)
-            - Last 5 patch versions of the latest minor (as `maj.min.patch`)
+            Automated update of SDK version matrix.

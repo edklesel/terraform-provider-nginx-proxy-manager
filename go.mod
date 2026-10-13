@@ -1,4 +1,4 @@
-module github.com/edklesel/terraform-provider-nginx-proxy-manager
+module github.com/edklesel/terraform-provider-nginxproxymanager
 
 go 1.25.8
 

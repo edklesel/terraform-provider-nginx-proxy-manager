@@ -7,8 +7,8 @@ import (
 	"context"
 	"strconv"
 
-	models "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/models"
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	models "github.com/edklesel/terraform-provider-nginxproxymanager/internal/models"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"

@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 )
 
 func configureProvider(req resource.ConfigureRequest, resp *resource.ConfigureResponse) (client *sdk.Client) {

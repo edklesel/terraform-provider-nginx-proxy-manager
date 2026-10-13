@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
-	models "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/models"
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	models "github.com/edklesel/terraform-provider-nginxproxymanager/internal/models"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -161,54 +161,6 @@ func (r *accessListResource) Create(ctx context.Context, req resource.CreateRequ
 		)
 		return
 	}
-
-	// There's a slight bug where the order of clients sometimes isn't preserved, so
-	// if this happens we try to re-apply the config via the Update method to set the
-	// order correctly.
-	// https://github.com/NginxProxyManager/nginx-proxy-manager/issues/5405
-	// var needsUpdate = false
-	// var updated = 0
-	// var maxUpdates = 5
-	// for i := range *_accessList.Clients {
-	// 	if *(*_accessList.Clients)[i].Address != *(*access_list.Clients)[i].Address &&
-	// 		*(*_accessList.Clients)[i].Directive != *(*access_list.Clients)[i].Directive {
-	// 		needsUpdate = true
-	// 		break
-	// 	}
-	// }
-	// for {
-	// 	if needsUpdate {
-	// 		access_list, err = r.client.AccessLists.Update(access_list.ID, access_list.AccessListBase)
-	// 		updated++
-	// 		if err != nil {
-	// 			resp.Diagnostics.AddError(
-	// 				"Error creating access list.",
-	// 				fmt.Sprintf("Unable to create access list, unexpected error: %s", err.Error()),
-	// 			)
-	// 			return
-	// 		}
-	// 		resp.Diagnostics.AddWarning(
-	// 			"Recreation of access list was required",
-	// 			"The order of the clients in the access list was not correct, so it was updated.",
-	// 		)
-	// 	}
-	// for i := range *_accessList.Clients {
-	// 	if *(*_accessList.Clients)[i].Address != *(*access_list.Clients)[i].Address &&
-	// 		*(*_accessList.Clients)[i].Directive != *(*access_list.Clients)[i].Directive {
-	// 		needsUpdate = true
-	// 		break
-	// 	}
-	// }
-	// if !needsUpdate {
-	// 	break
-	// } else if updated == maxUpdates {
-	// 	resp.Diagnostics.AddError(
-	// 		"Error creating access list.",
-	// 		fmt.Sprintf("Unable to create access list, client order was not preserved during creation. Atempts: %d", maxUpdates),
-	// 	)
-	// 	return
-	// }
-	// }
 
 	plan.ID = types.StringValue(strconv.Itoa(access_list.ID))
 	plan.Name = types.StringValue(*access_list.Name)

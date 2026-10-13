@@ -8,3 +8,8 @@ repos:
       - id: go-fmt
       - id: go-mod-tidy
       - id: golangci-lint
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
+        language_version: 1.25.14

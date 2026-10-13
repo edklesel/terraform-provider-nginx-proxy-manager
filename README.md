@@ -16,7 +16,8 @@
   - [Installation](#installation)
   - [Supported Versions](#supported-versions)
   - [Contributing](#contributing)
-  - [Testing](#testing)
+  - [Test Setup](#test-setup)
+    - [Quirks](#quirks)
 
 ## Documentation
 
@@ -64,4 +65,24 @@ make generate
 make lint
 ```
 
-## Testing
+Tests can be run using the relevant command:
+```bash
+make test-sdk # For SDK testing
+make test-acc # For TF provider testing
+```
+
+## Test Setup
+
+Tests are set up using the following components, mirroring the setup in the main NGINX Proxy Manager repository:
+
+- `NPM` / `MariaDB` - The main NGINX Proxy Manager service
+- `PowerDNS` / `MariaDB` - DNS provider used for ACME DNS challenges
+- `Step-CA` - ACME Certificate provider
+- `DNSRouter` - Intercept DNS requests for the domain `example.com` and forward to PowerDNS.
+
+### Quirks
+
+- NPM has access to the step-ca volume as it needs to read the root CA for requests CA certificate verification.
+- NPM locally mounts its data directory so the test suite has access to keys.json, which is used to decrypt the JWT tokens in tests.
+- Step-CA, for some reason, creates its `root_ca.crt` file with `1000:1000` permissions, regardless of the user running the container. Therefore, the makefile sets the UID to this user.
+- Similarly, NPM creates the `keys.json` file with only user rw permissions, so there's a command to allow group read permission during the `docker-up` make command so that it can be read by tests, in case the UID running the tests isn't 1000.

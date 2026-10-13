@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	datasources "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/provider/datasources"
-	resources "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/provider/resources"
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	datasources "github.com/edklesel/terraform-provider-nginxproxymanager/internal/provider/datasources"
+	resources "github.com/edklesel/terraform-provider-nginxproxymanager/internal/provider/resources"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 
 	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"

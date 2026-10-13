@@ -9,7 +9,7 @@ import (
 	"math/rand/v2"
 	"testing"
 
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 

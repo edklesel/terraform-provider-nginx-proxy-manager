@@ -6,7 +6,7 @@ package provider
 import (
 	"fmt"
 
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 
 	"github.com/hashicorp/go-version"
 )

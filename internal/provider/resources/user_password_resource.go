@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
-	models "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/models"
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
+	models "github.com/edklesel/terraform-provider-nginxproxymanager/internal/models"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"

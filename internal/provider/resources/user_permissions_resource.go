@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	models "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/models"
-	sdk "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/sdk"
-	utils "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/utils"
+	models "github.com/edklesel/terraform-provider-nginxproxymanager/internal/models"
+	sdk "github.com/edklesel/terraform-provider-nginxproxymanager/internal/sdk"
+	utils "github.com/edklesel/terraform-provider-nginxproxymanager/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"

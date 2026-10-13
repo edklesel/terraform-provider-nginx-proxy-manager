@@ -8,7 +8,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/provider"
+	"github.com/edklesel/terraform-provider-nginxproxymanager/internal/provider"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
@@ -32,7 +32,7 @@ func main() {
 		// TODO: Update this string with the published name of your provider.
 		// Also update the tfplugindocs generate command to either remove the
 		// -provider-name flag or set its value to the updated provider name.
-		Address: "registry.terraform.io/edklesel/nginx-proxy-manager",
+		Address: "registry.terraform.io/edklesel/nginxproxymanager",
 		Debug:   debug,
 	}
 

@@ -6,7 +6,7 @@ package tests
 import (
 	"fmt"
 
-	provider "github.com/edklesel/terraform-provider-nginx-proxy-manager/internal/provider"
+	provider "github.com/edklesel/terraform-provider-nginxproxymanager/internal/provider"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
